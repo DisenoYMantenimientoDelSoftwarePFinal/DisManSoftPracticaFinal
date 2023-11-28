@@ -4,7 +4,7 @@ DisManSoftPracticaFinal
 🌐 Diseño y Mantenimiento del Software: Aplicación Web GitHub 🚀
 Bienvenidos al repositorio del proyecto final de Diseño y Mantenimiento del Software. Este proyecto es una aplicación web que se conecta a repositorios de GitHub, desarrollada con Python, Flask, HTML y SQLAlchemy.
 
-<h1 align="center">🌟 Equipo de Desarrollo Estelar 🌟</h1>
+<h1 align="center">🌟 Equipo de Desarrollo 🌟</h1>
 <p align="center">Conoce a los desarrolladores que han hecho posible esta aplicación.</p>
 <div align="center">
   <!-- Victor Gonzalez -->
@@ -12,7 +12,7 @@ Bienvenidos al repositorio del proyecto final de Diseño y Mantenimiento del Sof
   <!-- Alberto Santos -->
   <img src="https://img.shields.io/badge/Alberto_Santos-Experto_Flask-brightgreen?style=for-the-badge&logo=flask" alt="Alberto Santos Martínez">
   <!-- Mario Sanz -->
-  <img src="https://img.shields.io/badge/Mario_Sanz-Especialista_HTML-orange?style=for-the-badge&logo=html5" alt="Mario Sanz Pérez">
+  <img src="https://img.shields.io/badge/Mario_Sanz-Especialista_SQL-orange?style=for-the-badge&logo=html5" alt="Mario Sanz Pérez">
 </div>
 <h2 align="center">👨‍💻 Tecnologías Utilizadas 👩‍💻</h2>
 <p align="center">Esta aplicación ha sido desarrollada utilizando las siguientes tecnologías:</p>
@@ -20,7 +20,7 @@ Bienvenidos al repositorio del proyecto final de Diseño y Mantenimiento del Sof
   <!-- Tecnologías -->
   <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python">
   <img src="https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white" alt="Flask">
-  <img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white" alt="HTML5">
+  <img src="https://img.shields.io/badge/Github API-E34F26?style=for-the-badge&logo=html5&logoColor=white" alt="Github API">
   <img src="https://img.shields.io/badge/SQLAlchemy-FF694F?style=for-the-badge&logo=sqlite&logoColor=white" alt="SQLAlchemy">
   <!-- Añade más si es necesario -->
 </div>
