@@ -1,20 +1,12 @@
-<<<<<<< HEAD
+
 DisManSoftPracticaFinal
 🌐 Diseño y Mantenimiento del Software: Proyecto Final 🚀
 Bienvenidos al repositorio del proyecto final de la asignatura Diseño y Mantenimiento del Software. Este espacio es una celebración del esfuerzo y la dedicación de nuestros estudiantes.
-=======
-# DisManSoftPracticaFinal
 
-Esta es la práctica final de la asignatura Diseño y Mantenimiento del Software
-
-# 🚀 Lista de Alumnos Destacados 🌟
-
->>>>>>> c24802ab9d458c3c030abf17af286376b5a9cd78
 
 <h1 align="center">🌟 Equipo de Estudiantes Estelares 🌟</h1>
 <p align="center">Conoce a los arquitectos detrás de este proyecto.</p>
 <div align="center">
-<<<<<<< HEAD
   <!-- Victor Gonzalez -->
   <img src="https://img.shields.io/badge/Victor_Gonzalez-Arquitecto_Software-blueviolet?style=for-the-badge&logo=github" alt="Víctor González del Campo">
   <!-- Alberto Santos -->
@@ -42,11 +34,6 @@ Esta es la práctica final de la asignatura Diseño y Mantenimiento del Software
 <div align="center">
   <!-- Enlaces a documentación -->
   <!-- Ejemplo: <a href="URL_DE_LA_DOCUMENTACION">Documentación</a> -->
-</div>
-=======
-  <img src="https://img.shields.io/badge/1.-V%C3%ADctor_Gonz%C3%A1lez_del_Campo-blue?style=flat-square&logo=python&labelColor=black" alt="Víctor González del Campo">
-  <img src="https://img.shields.io/badge/2.-Alberto_Santos_Mart%C3%ADnez-green?style=flat-square&logo=java&labelColor=black" alt="Alberto Santos Martínez">
-  <img src="https://img.shields.io/badge/3.-Mario_Sanz_P%C3%A9rez-orange?style=flat-square&logo=c%2B%2B&labelColor=black" alt="Mario Sanz Pérez">
-</div>
+
 
 
