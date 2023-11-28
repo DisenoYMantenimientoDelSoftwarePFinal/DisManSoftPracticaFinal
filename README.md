@@ -7,7 +7,7 @@ Esta es la práctica final de la asignatura Diseño y Mantenimiento del Software
 <p align="center">Una lista increíble de estudiantes destacados.</p>
 
 <div align="center">
-  <img src="https://img.shields.io/badge/1.-Juan_Pérez-blueviolet?style=for-the-badge" alt="Juan Pérez">
-  <img src="https://img.shields.io/badge/2.-María_Gómez-brightgreen?style=for-the-badge" alt="María Gómez">
-  <img src="https://img.shields.io/badge/3.-Alejandro_Rodríguez-orange?style=for-the-badge" alt="Alejandro Rodríguez">
+  <img src="https://img.shields.io/badge/1.-Victor_Gonzalez-blueviolet?style=for-the-badge" alt="Víctor González del Campo">
+  <img src="https://img.shields.io/badge/2.-Alberto_Santos-brightgreen?style=for-the-badge" alt="Alberto Santos Martínez">
+  <img src="https://img.shields.io/badge/3.-Mario_Sanz-orange?style=for-the-badge" alt="Mario Sanz Pérez">
 </div>
