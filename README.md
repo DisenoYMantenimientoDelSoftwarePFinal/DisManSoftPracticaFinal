@@ -8,6 +8,17 @@ Bienvenidos al repositorio del proyecto final de Diseño y Mantenimiento del Sof
 <p align="center">Conoce a los desarrolladores que han hecho posible esta aplicación.</p>
 <div align="center">
   <!-- Victor Gonzalez -->
+  <img src="https://github.com/DisenoYMantenimientoDelSoftwarePFinal/DisManSoftPracticaFinal/blob/main/images/Victor.jpeg" alt="Víctor González del Campo" width="150">
+  <!-- Alberto Santos -->
+  <img src="https://github.com/DisenoYMantenimientoDelSoftwarePFinal/DisManSoftPracticaFinal/blob/main/images/Alberto.jpg" alt="Alberto Santos Martínez" width="150">
+  <!-- Mario Sanz -->
+  <img src="https://img.shields.io/badge/Mario_Sanz-Especialista_SQL-orange?style=for-the-badge&logo=html5" alt="Mario Sanz Pérez">
+</div>
+
+<h1 align="center">🌟 Equipo de Desarrollo 🌟</h1>
+<p align="center">Conoce a los desarrolladores que han hecho posible esta aplicación.</p>
+<div align="center">
+  <!-- Victor Gonzalez -->
   <img src="https://img.shields.io/badge/Victor_Gonzalez-Desarrollador_Python-blueviolet?style=for-the-badge&logo=python" alt="Víctor González del Campo">
   <!-- Alberto Santos -->
   <img src="https://img.shields.io/badge/Alberto_Santos-Experto_Flask-brightgreen?style=for-the-badge&logo=flask" alt="Alberto Santos Martínez">
@@ -37,8 +48,4 @@ Bienvenidos al repositorio del proyecto final de Diseño y Mantenimiento del Sof
   <!-- Ejemplo: <a href="URL_DE_LA_DOCUMENTACION">Documentación</a> -->
 </div>
 
-
-![Descripción de Alberto](https://github.com/DisenoYMantenimientoDelSoftwarePFinal/DisManSoftPracticaFinal/blob/main/images/Alberto.jpg)
-
-![Descripción de Victor](https://github.com/DisenoYMantenimientoDelSoftwarePFinal/DisManSoftPracticaFinal/blob/main/images/Victor.jpeg)
 
