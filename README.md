@@ -36,3 +36,9 @@ Bienvenidos al repositorio del proyecto final de Diseño y Mantenimiento del Sof
   <!-- Enlaces a documentación -->
   <!-- Ejemplo: <a href="URL_DE_LA_DOCUMENTACION">Documentación</a> -->
 </div>
+
+
+![Descripción de Alberto](https://github.com/DisenoYMantenimientoDelSoftwarePFinal/DisManSoftPracticaFinal/blob/main/images/Alberto.jpg)
+
+![Descripción de Victor](https://github.com/DisenoYMantenimientoDelSoftwarePFinal/DisManSoftPracticaFinal/blob/main/images/Victor.jpeg)
+
