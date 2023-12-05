@@ -12,7 +12,7 @@ Bienvenidos al repositorio del proyecto final de Diseño y Mantenimiento del Sof
   <!-- Alberto Santos -->
   <img src="https://github.com/DisenoYMantenimientoDelSoftwarePFinal/DisManSoftPracticaFinal/blob/main/images/Alberto.jpg" alt="Alberto Santos Martínez" width="150">
   <!-- Mario Sanz -->
-  <img src="https://img.shields.io/badge/Mario_Sanz-Especialista_SQL-orange?style=for-the-badge&logo=html5" alt="Mario Sanz Pérez">
+  <img src="https://img.shields.io/badge/Mario_Sanz-orange?style=for-the-badge&logo=html5" alt="Mario Sanz Pérez">
 </div>
 
 <h1 align="center">🌟 Equipo de Desarrollo 🌟</h1>
