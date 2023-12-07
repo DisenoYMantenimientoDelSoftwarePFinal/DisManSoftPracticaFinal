@@ -1,5 +1,3 @@
-
-
 DisManSoftPracticaFinal
 🌐 Diseño y Mantenimiento del Software: Aplicación Web GitHub 🚀
 Bienvenidos al repositorio del proyecto final de Diseño y Mantenimiento del Software. Este proyecto es una aplicación web que se conecta a repositorios de GitHub, desarrollada con Python, Flask, HTML y SQLAlchemy.
@@ -8,11 +6,11 @@ Bienvenidos al repositorio del proyecto final de Diseño y Mantenimiento del Sof
 <p align="center">Conoce a los desarrolladores que han hecho posible esta aplicación.</p>
 <div align="center">
   <!-- Victor Gonzalez -->
-  <img src="https://github.com/DisenoYMantenimientoDelSoftwarePFinal/DisManSoftPracticaFinal/blob/main/images/Victor.jpeg" alt="Víctor González del Campo" width="150">
+  <img src="https://github.com/DisenoYMantenimientoDelSoftwarePFinal/DisManSoftPracticaFinal/blob/main/images/Victor.jpeg" alt="Víctor González del Campo" width="100">
   <!-- Alberto Santos -->
-  <img src="https://github.com/DisenoYMantenimientoDelSoftwarePFinal/DisManSoftPracticaFinal/blob/main/images/Alberto.jpg" alt="Alberto Santos Martínez" width="150">
+  <img src="https://github.com/DisenoYMantenimientoDelSoftwarePFinal/DisManSoftPracticaFinal/blob/main/images/Alberto.jpg" alt="Alberto Santos Martínez" width="100">
   <!-- Mario Sanz -->
-  <img src="https://img.shields.io/badge/Mario_Sanz-orange?style=for-the-badge&logo=html5" alt="Mario Sanz Pérez">
+  <img src="https://github.com/DisenoYMantenimientoDelSoftwarePFinal/DisManSoftPracticaFinal/blob/main/images/Mario.jpg" alt="Mario Sanz Pérez" width="100">
 </div>
 
 <h1 align="center">🌟 Equipo de Desarrollo 🌟</h1>
@@ -47,5 +45,3 @@ Bienvenidos al repositorio del proyecto final de Diseño y Mantenimiento del Sof
   <!-- Enlaces a documentación -->
   <!-- Ejemplo: <a href="URL_DE_LA_DOCUMENTACION">Documentación</a> -->
 </div>
-
-
