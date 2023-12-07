@@ -1,7 +1,7 @@
 from flask import Flask, flash, redirect, render_template, request, session, url_for
-from sqlalchemy import String, ForeignKey
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_colum, relationship
-from typing import List, Optional
+#from sqlalchemy import String, ForeignKey
+#from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_colum, relationship
+#from typing import List, Optional
 from markupsafe import escape
 
 app = Flask(__name__)
