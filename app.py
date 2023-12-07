@@ -1,4 +1,7 @@
 from flask import Flask, flash, redirect, render_template, request, session, url_for
+from sqlalchemy import String, ForeignKey
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_colum, relationship
+from typing import List, Optional
 from markupsafe import escape
 
 app = Flask(__name__)
@@ -64,3 +67,18 @@ def private():
 def logout():
     session.pop('logged_in_user',None)
     return redirect(url_for('login_get'))
+
+
+"""
+class Base(DeclarativeBase):
+    pass
+
+class User(Base):
+    __tablename__ = "user_account"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String(30))
+    fullname: Mapped[Optional[str]]
+    addresses: Mapped[List["Address"]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
+"""
