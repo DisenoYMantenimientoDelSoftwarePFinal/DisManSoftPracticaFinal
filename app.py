@@ -44,21 +44,21 @@ def register_get():
 @app.post("/register")   
 def register_post():
     if (len(request.form['username']) != 0 and len(request.form['password']) != 0):
-        try:
-            with Session(engine) as session:
-            
-                usuario = User(
-                        username=request.form['username'], 
-                        password=request.form['password'])
-                session.add(usuario)
-                session.commit()
-                flask_session['logged_in_user'] = usuario.username
-                flash('Te has logueado satisfactoriamente')
-                return redirect(url_for('private'))
-        except IntegrityError:
+        
+        with Session(engine) as session:
+            try:
+                with session.begin():
+                    usuario = User(
+                            username=request.form['username'], 
+                            password=request.form['password'])
+                    session.add(usuario)
+                    session.commit()
+                    flask_session['logged_in_user'] = usuario.username
+                    flash('Te has logueado satisfactoriamente')
+                    return redirect(url_for('private'))
+            except IntegrityError as e:
                 session.rollback()
-                flash('Usuario ya existe')
-                return redirect(url_for('register_get'))
+                flash('Error al registrar: El nombre de usuario ya está en uso. Por favor, elige otro.')
                 
     else:
         flash('Usuario o contraseña no correcto')
