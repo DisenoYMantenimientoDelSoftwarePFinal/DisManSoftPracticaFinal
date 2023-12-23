@@ -1,0 +1,25 @@
+
+Primero se crea el entorno virtual si no se tiene:
+- python -m venv venv
+
+En todo momento se tiene que tener activado este entorno virtual:
+- venv\Scripts\activate
+
+Instalamos los requirements para poder utilizar la aplicación:
+- pip install -r requirements.txt
+
+Ejecutamos la aplicación web:
+- flask --app app run --debug
+
+Comandos de GitHub:
+Para subir a GitHub:
+
+- git add.
+
+- git commit -m "Texto"
+
+- git push origin main
+
+Para descargar:
+
+- git pull
