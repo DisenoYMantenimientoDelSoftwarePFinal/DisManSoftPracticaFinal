@@ -68,6 +68,14 @@
 <body>
     <div class="container">
         <h1>Iniciar Sesión</h1>
+        <!-- Agregado para mostrar mensajes flash -->
+          {% with messages = get_flashed_messages() %} {% if messages %}
+          <div style="color: #f50505">
+            {% for message in messages %} {{ message }}<br />
+            {% endfor %}
+          </div>
+          {% endif %} {% endwith %}
+
         <form action="{{ url_for('login_get') }}" method="post">
             <label for="username">Nombre de Usuario:</label>
             <input autocomplete="off" type="text" id="username" name="username" required>

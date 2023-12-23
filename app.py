@@ -50,29 +50,28 @@ def home():
 def register_get():
     return render_template('register.html')
 
-@app.post("/register")   
+@app.post("/register")
 def register_post():
-    if (len(request.form['username']) != 0 and len(request.form['password']) != 0):
-        
+    if len(request.form['username']) != 0 and len(request.form['password']) != 0:
         with Session(engine) as session:
             try:
-                with session.begin():
-                    usuario = User(
-                            username=request.form['username'], 
-                            password=request.form['password'])
-                    session.add(usuario)
-                    session.commit()
-                    flask_session['logged_in_user'] = usuario.username
-                    flash('Te has logueado satisfactoriamente')
-                    return redirect(url_for('principal'))
+                usuario = User(
+                    username=request.form['username'],
+                    password=request.form['password'])
+
+                session.add(usuario)
+                session.commit()
+                flask_session['logged_in_user'] = usuario.username
+                flash('Te has registrado satisfactoriamente')
+                return redirect(url_for('principal'))
             except IntegrityError as e:
+                # Captura la excepción de integridad y maneja el caso de usuario duplicado
                 session.rollback()
                 flash('Error al registrar: El nombre de usuario ya está en uso. Por favor, elige otro.')
-                
     else:
         flash('Usuario o contraseña no correcto')
-    return render_template('register.html')
 
+    return render_template('register.html')
 
 ADMIN_USERNAME = 'admin'
 ADMIN_PASSWORD = 'admin'    
@@ -87,25 +86,27 @@ def login_post():
     username = ''
     password = ''
     with Session(engine) as session:
-            result = session.scalars(
-                select(
-                    User,
-                ).where(
-                    User.username == request.form['username']
-                ).where(
-                    User.password == request.form['password'])
-            )
-            usuario = result.first()
-            if usuario is not None:
-                flask_session['logged_in_user'] = usuario.username
-                flash('Te has logueado satisfactoriamente')
-                return redirect(url_for('principal'))
-            else:
-                error = 'Invalid username/password'
+        result = session.scalars(
+            select(
+                User,
+            ).where(
+                User.username == request.form['username']
+            ).where(
+                User.password == request.form['password'])
+        )
+        usuario = result.first()
+        if usuario is not None:
+            flask_session['logged_in_user'] = usuario.username
+            flash('¡Te has logueado satisfactoriamente!', 'success')
+            return redirect(url_for('principal'))
+        else:
+            error = 'Nombre de usuario o contraseña incorrectos'
+            flash('Inicio de sesión fallido. ' + error, 'error')
+
     return render_template(
-        'login.html', 
-        error=error, 
-        username = username
+        'login.html',
+        error=error,
+        username=username
     )
 
 #stmt = select(User).where(User.name.in_(["spongebob", "sandy"]))
