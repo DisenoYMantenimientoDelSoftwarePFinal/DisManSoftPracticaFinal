@@ -1,4 +1,4 @@
-from sqlite3 import IntegrityError
+from sqlalchemy.exc import IntegrityError
 from flask import Flask, flash, redirect, render_template, request, session as flask_session, url_for
 from markupsafe import escape
 
@@ -6,7 +6,9 @@ from sqlalchemy import String, ForeignKey
 from sqlalchemy.orm import DeclarativeBase, Mapped, relationship
 from sqlalchemy.orm import mapped_column
 from typing import List, Optional
-from sqlalchemy import select
+from sqlalchemy import select, Date, Column
+from sqlalchemy import create_engine
+from datetime import date
 
 
 class Base(DeclarativeBase):
@@ -16,10 +18,17 @@ class User(Base):
     __tablename__ = "user_account"
     id: Mapped[int] = mapped_column(primary_key=True)
     username: Mapped[str] = mapped_column(String(30), unique=True)
-    password: Mapped[Optional[str]]
+    password: Mapped[str] # Hemos quitado Optional porque no queremos que sea nulo
 
+class Repositorios(Base):
+    __tablename__ = "repositorios"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    owner: Mapped[str] = mapped_column(String(30), unique=True)
+    repo: Mapped[str] = mapped_column(String(30), unique=True)
+    fecha_ultima_actualizacion: Mapped[date] = Column(Date)
+    favorito: Mapped[Optional[bool]]
+    
 
-from sqlalchemy import create_engine
 
 engine = create_engine("sqlite:///./BD/githubExplorer.sqlite", echo=True)
 Base.metadata.create_all(engine)
@@ -55,7 +64,7 @@ def register_post():
                     session.commit()
                     flask_session['logged_in_user'] = usuario.username
                     flash('Te has logueado satisfactoriamente')
-                    return redirect(url_for('private'))
+                    return redirect(url_for('principal'))
             except IntegrityError as e:
                 session.rollback()
                 flash('Error al registrar: El nombre de usuario ya está en uso. Por favor, elige otro.')
@@ -90,7 +99,7 @@ def login_post():
             if usuario is not None:
                 flask_session['logged_in_user'] = usuario.username
                 flash('Te has logueado satisfactoriamente')
-                return redirect(url_for('private'))
+                return redirect(url_for('principal'))
             else:
                 error = 'Invalid username/password'
     return render_template(
@@ -122,6 +131,29 @@ def private():
         return redirect(url_for('login_get'))
     return render_template('private.html')
 
+@app.route('/principal')
+def principal():
+    if 'logged_in_user' not in flask_session:
+        return redirect(url_for('login_get'))
+    
+    
+    return render_template('principal.html')
+
+
+@app.route('/principal/add')
+def add():
+    if 'logged_in_user' not in flask_session:
+        return redirect(url_for('login_get'))
+
+    return render_template('add.html')
+
+
+@app.route('/principal/detalles/<owner>/<repo>')
+def detalles(owner, repo):
+    if 'logged_in_user' not in flask_session:
+        return redirect(url_for('login_get'))
+    
+    return render_template('detalles.html', owner=owner, repo=repo)
 
 @app.route("/logout")
 def logout():

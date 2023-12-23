@@ -1,0 +1,78 @@
+<!-- Página principal (/principal) -->
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>GitHub Explorer - Principal</title>
+  </head>
+  <body>
+    <h1>Lista de Repositorios</h1>
+
+    <!-- Verificar si hay repositorios -->
+    <div id="repo-list">
+      <!-- La tabla se generará dinámicamente aquí -->
+    </div>
+
+    <!-- Mensaje para repositorios vacíos -->
+    <div id="empty-message" style="display: none">
+      <p>No se han añadido repositorios.</p>
+    </div>
+
+    <!-- Enlace para añadir repositorio -->
+    <a href="/agregar-repo">Añadir Repositorio</a>
+
+    <script>
+      // Simulación de datos de repositorios (puedes reemplazar con la lógica de tu aplicación)
+      const repositorios = [
+        {
+          id: 1,
+          owner: "usuario1",
+          repo: "repo1",
+          fecha_ultima_actualizacion: "2023-01-01",
+          favorito: true,
+        },
+        {
+          id: 2,
+          owner: "usuario2",
+          repo: "repo2",
+          fecha_ultima_actualizacion: "2023-02-01",
+          favorito: false,
+        },
+      ];
+
+      const repoListContainer = document.getElementById("repo-list");
+      const emptyMessage = document.getElementById("empty-message");
+
+      if (repositorios.length === 0) {
+        emptyMessage.style.display = "block";
+      } else {
+        // Construir la tabla dinámicamente
+        const table = document.createElement("table");
+        table.innerHTML = `
+        <tr>
+          <th>ID</th>
+          <th>Owner</th>
+          <th>Repo</th>
+          <th>Última Actualización</th>
+          <th>Favorito</th>
+        </tr>
+      `;
+
+        repositorios.forEach((repo) => {
+          const row = table.insertRow();
+          row.innerHTML = `
+          <td>${repo.id}</td>
+          <td>${repo.owner}</td>
+          <td><a href="/principal/detalles/${repo.owner}/${repo.repo}">${
+            repo.repo
+          }</a></td>
+          <td>${repo.fecha_ultima_actualizacion}</td>
+          <td>${repo.favorito ? "Sí" : "No"}</td>
+        `;
+        });
+
+        repoListContainer.appendChild(table);
+      }
+    </script>
+  </body>
+</html>
