@@ -1,1 +1,27 @@
-añadir
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Añadir Repositorio a GitHub Explorer</title>
+    <!-- Añade aquí tus hojas de estilo o referencias a archivos CSS -->
+</head>
+<body>
+    <div class="container">
+        <h1>Añadir Repositorio</h1>
+        <p>Introduce el nombre del repositorio en formato "owner/repo".</p>
+        <form action="{{ url_for('add_post') }}" method="post">
+            <div>
+                <label for="repositorio">Repositorio:</label>
+                <input type="text" id="repositorio" name="repositorio" placeholder="owner/repo" required>
+            </div>
+            <div>
+                <button type="submit">Añadir Repositorio</button>
+            </div>
+        </form>
+        <a href="{{ url_for('principal') }}">Volver a la Página Principal</a>
+    </div>
+
+    <!-- Incluye aquí scripts de JavaScript si es necesario -->
+</body>
+</html>
+

@@ -1,1 +1,30 @@
-detalles
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalles del Repositorio</title>
+    <!-- Añade aquí tus hojas de estilo o referencias a archivos CSS -->
+</head>
+<body>
+    <div class="container">
+        <h1>Detalles del Repositorio: {{ repositorio.repo }}</h1>
+        <p>Propietario: {{ repositorio.owner }}</p>
+        <p>Número de Estrellas: {{ repositorio.num_stars }}</p>
+        <p>Número de Forks: {{ repositorio.num_forks }}</p>
+        <p>Rama por Defecto: {{ repositorio.default_branch }}</p>
+        <p>Número de Issues Abiertos: {{ repositorio.num_open_issues }}</p>
+        <p>Fecha de Última Actualización: {{ repositorio.fecha_ultima_actualizacion }}</p>
+        <p>Fecha de Creación: {{ repositorio.fecha_creacion }}</p>
+        <p>Favorito: {{ 'Sí' if repositorio.favorito else 'No' }}</p>
+
+        <form action="{{ url_for('detalles_post', owner=repositorio.owner, repo=repositorio.repo) }}" method="post">
+            <button type="submit">Actualizar Detalles</button>
+        </form>
+
+        <a href="{{ url_for('principal') }}">Volver a la Página Principal</a>
+    </div>
+
+    <!-- Incluye aquí scripts de JavaScript si es necesario -->
+</body>
+</html>
+
