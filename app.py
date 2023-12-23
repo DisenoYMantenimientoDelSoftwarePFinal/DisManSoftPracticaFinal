@@ -1,3 +1,4 @@
+from sqlite3 import IntegrityError
 from flask import Flask, flash, redirect, render_template, request, session as flask_session, url_for
 from markupsafe import escape
 
@@ -42,18 +43,22 @@ def register_get():
 
 @app.post("/register")   
 def register_post():
-    #TODO: sqlalchemy.exc.IntegrityError
     if (len(request.form['username']) != 0 and len(request.form['password']) != 0):
-        with Session(engine) as session:
-            usuario = User(
-                    username=request.form['username'], 
-                    password=request.form['password'])
+        try:
+            with Session(engine) as session:
             
-            session.add(usuario)
-            session.commit()
-            flask_session['logged_in_user'] = usuario.username
-            flash('Te has logueado satisfactoriamente')
-            return redirect(url_for('private'))
+                usuario = User(
+                        username=request.form['username'], 
+                        password=request.form['password'])
+                session.add(usuario)
+                session.commit()
+                flask_session['logged_in_user'] = usuario.username
+                flash('Te has logueado satisfactoriamente')
+                return redirect(url_for('private'))
+        except IntegrityError:
+                session.rollback()
+                return redirect(url_for('register_get'))
+                flash('Usuario ya existe')
     else:
         flash('Usuario o contraseña no correcto')
     return render_template('register.html')
