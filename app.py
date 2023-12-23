@@ -21,7 +21,7 @@ class User(Base):
 
 from sqlalchemy import create_engine
 
-engine = create_engine("sqlite:///./baseDatos/githubExplorer.sqlite", echo=True)
+engine = create_engine("sqlite:///./BD/githubExplorer.sqlite", echo=True)
 Base.metadata.create_all(engine)
 
 from sqlalchemy.orm import Session
