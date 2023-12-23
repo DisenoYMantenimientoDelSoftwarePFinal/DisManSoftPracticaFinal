@@ -57,8 +57,9 @@ def register_post():
                 return redirect(url_for('private'))
         except IntegrityError:
                 session.rollback()
-                return redirect(url_for('register_get'))
                 flash('Usuario ya existe')
+                return redirect(url_for('register_get'))
+                
     else:
         flash('Usuario o contraseña no correcto')
     return render_template('register.html')
