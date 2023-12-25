@@ -12,7 +12,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh; /* Cambia "height" a "min-height" */
             overflow: auto;
         }
 
@@ -23,6 +23,7 @@
             padding: 20px;
             max-width: 600px;
             width: 100%;
+            overflow-y: auto; /* Agrega desplazamiento vertical cuando sea necesario */
         }
 
         .header {
@@ -107,4 +108,3 @@
     </div>
 </body>
 </html>
-
