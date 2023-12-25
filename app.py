@@ -5,6 +5,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from flask import Flask, flash, redirect, render_template, request, session as flask_session, url_for
 from sqlalchemy import Column, Integer, String, Boolean, Date
 from datetime import datetime
+import time
 
 
 from markupsafe import escape
@@ -30,8 +31,8 @@ class User(Base):
 class Repositorios(Base):
     __tablename__ = "repositorios"
     id = Column(Integer, primary_key=True)
-    owner = Column(String(30), unique=True)
-    repo = Column(String(30), unique=True)
+    owner = Column(String(30))
+    repo = Column(String(30))
     fecha_ultima_actualizacion = Column(Date)
     favorito = Column(Boolean, default=False)
     num_forks = Column(Integer, default=0, nullable=True)
@@ -40,7 +41,6 @@ class Repositorios(Base):
     num_open_issues = Column(Integer, default=0)
     fecha_creacion = Column(Date)
     
-
 
 engine = create_engine("sqlite:///./BD/githubExplorer.sqlite", echo=True)
 Base.metadata.create_all(engine)
@@ -153,9 +153,11 @@ def private():
 def principal():
     if 'logged_in_user' not in flask_session:
         return redirect(url_for('login_get'))
-    
-    
-    return render_template('principal.html')
+
+    with Session(engine) as session:
+        repositorios = session.query(Repositorios).all()
+
+    return render_template('principal.html', repositorios=repositorios)
 
 
 @app.get('/principal/add')
@@ -228,6 +230,8 @@ def add_post():
             flash("Error al añadir/actualizar el repositorio en la base de datos.")
 
     return redirect(url_for('detalles_get', owner=owner, repo=repo_name))
+
+
 
 @app.get('/principal/detalles/<owner>/<repo>')
 def detalles_get(owner, repo):
