@@ -89,10 +89,29 @@
         .footer a:hover {
             text-decoration: underline;
         }
+        /* Estilo para mostrar mensajes flash */
+        .flash-message {
+            padding: 10px;
+            background-color: #f44336; /* Rojo para errores */
+            color: white;
+            margin-bottom: 15px;
+            text-align: center;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- Bloque para mostrar mensajes flash -->
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            {% for message in messages %}
+              <div class="flash-message">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+
         <div class="header">Detalles del Repositorio: {{ repositorio.repo }}</div>
         <div class="detail"><p><span>Propietario:</span> {{ repositorio.owner }}</p></div>
         <div class="detail"><p><span>Número de Estrellas:</span> {{ repositorio.num_stars }}</p></div>

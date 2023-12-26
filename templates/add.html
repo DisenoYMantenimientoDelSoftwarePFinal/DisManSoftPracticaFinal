@@ -119,11 +119,14 @@
             background-color: #45a049;
         }
 
-        /* Estilo para el mensaje de error en rojo */
-        .error-message {
-            color: red;
-            font-weight: bold;
-            display: none; /* Inicialmente oculto */
+        /* Estilo para mostrar mensajes flash */
+        .flash-message {
+            padding: 10px;
+            background-color: #f44336; /* Rojo para errores */
+            color: white;
+            margin-bottom: 15px;
+            text-align: center;
+            border-radius: 5px;
         }
     </style>
 </head>
@@ -132,9 +135,15 @@
         <h1>Añadir Repositorio</h1>
         <p>Introduce el nombre del repositorio en formato "owner/repo".</p>
 
-        <!-- Agrega el mensaje de error en rojo con un ID para identificarlo -->
-        <div id="error-message" class="error-message"></div>
-        <!-- Fin del mensaje de error -->
+        <!-- Bloque para mostrar mensajes flash -->
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            {% for message in messages %}
+              <div class="flash-message">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+        <!-- Fin del bloque para mostrar mensajes flash -->
 
         <form action="{{ url_for('add_post') }}" method="post">
             <div>
@@ -144,12 +153,8 @@
             <div>
                 <button type="submit">Añadir Repositorio</button>
             </div>
-            <div id="success-message" class="success-message" style="display: none;"></div>
-
         </form>
         <a href="{{ url_for('principal') }}">Volver a la Página Principal</a>
     </div>
-
-
 </body>
 </html>
