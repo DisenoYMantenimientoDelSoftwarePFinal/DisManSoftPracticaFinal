@@ -243,9 +243,12 @@ def add_post():
                 session.add(nuevo_repositorio)
                 session.flush()  # Obtener el ID del nuevo repositorio
 
-                # Insertar una fila en la tabla user_repo
-                user_id = flask_session['user_id']  # Obtener el ID del usuario actual
-                user_repo = UserRepo(user_id=user_id, repo_id=nuevo_repositorio.id)
+            # Insertar una fila en la tabla user_repo
+            user_id = flask_session['user_id']  # Obtener el ID del usuario actual
+            user_repo = session.query(UserRepo).filter_by(user_id=user_id, repo_id=repositorio.id).first()
+            if not user_repo:
+                # Si el usuario no tiene este repositorio, añadirlo
+                user_repo = UserRepo(user_id=user_id, repo_id=repositorio.id)
                 session.add(user_repo)
 
             session.commit()
