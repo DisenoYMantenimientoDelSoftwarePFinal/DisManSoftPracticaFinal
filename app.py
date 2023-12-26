@@ -1,6 +1,6 @@
 import requests
 from sqlalchemy.exc import IntegrityError
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.exc import SQLAlchemyError
 from flask import Flask, flash, redirect, render_template, request, session as flask_session, url_for
 from sqlalchemy import Column, Integer, String, Boolean, Date
@@ -116,16 +116,10 @@ def login_post():
     password = request.form['password']
 
     with Session(engine) as session:
-        result = session.scalars(
-            select(
-                User,
-            ).where(
-                User.username == username
-            ).where(
-                User.password == password)
+        usuario = session.scalar(
+            select(User).where(User.username == username)
         )
-        usuario = result.first()
-        if usuario is not None:
+        if usuario and check_password_hash(usuario.password, password):
             flask_session['user_id'] = usuario.id  # Establecer la cookie de sesión con el ID del usuario
             flash('¡Te has logueado satisfactoriamente!', 'success')
             return redirect(url_for('principal'))
