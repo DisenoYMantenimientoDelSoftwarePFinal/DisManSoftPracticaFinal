@@ -5,7 +5,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from flask import Flask, flash, redirect, render_template, request, session as flask_session, url_for
 from sqlalchemy import Column, Integer, String, Boolean, Date
 from datetime import datetime
-import time
+from flask_session import Session
 
 
 from markupsafe import escape
@@ -40,7 +40,16 @@ class Repositorios(Base):
     default_branch = Column(String(50))
     num_open_issues = Column(Integer, default=0)
     fecha_creacion = Column(Date)
-    
+
+
+class UserRepo(Base):
+    __tablename__ = "user_repo"
+    user_id = Column(Integer, ForeignKey("user_account.id"), primary_key=True)
+    repo_id = Column(Integer, ForeignKey("repositorios.id"), primary_key=True)
+
+    # Definir relaciones con las tablas User y Repositorios
+    user = relationship("User", backref="user_repos")
+    repo = relationship("Repositorios", backref="repo_users")
 
 engine = create_engine("sqlite:///./BD/githubExplorer.sqlite", echo=True)
 Base.metadata.create_all(engine)
@@ -52,6 +61,10 @@ from sqlalchemy.orm import Session
 
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+
+# Configura flask_session para usar cookies de sesión
+app.config['SESSION_TYPE'] = 'filesystem'  # Puedes cambiar el tipo según tus necesidades
+Session(app)
 
 @app.route("/")
 def home():
@@ -68,7 +81,7 @@ def register_post():
     password = request.form['password']
 
     # Validaciones adicionales, si es necesario (p. ej., longitud de contraseña)
-    if len(username) == 0 or len(password) < 6:  # Ejemplo: longitud mínima de contraseña de 8
+    if len(username) == 0 or len(password) < 6:
         flash('Usuario o contraseña no válidos')
         return render_template('register.html')
 
@@ -80,12 +93,11 @@ def register_post():
 
             session.add(usuario)
             session.commit()
-            flask_session['logged_in_user'] = usuario.username
+            flask_session['user_id'] = usuario.id  # Establecer la cookie de sesión con el ID del usuario
             flash('Te has registrado satisfactoriamente')
             return redirect(url_for('principal'))
         except IntegrityError as e:
             session.rollback()
-            # Aquí puedes realizar una verificación más específica del error si es necesario
             flash('Error al registrar: El nombre de usuario ya está en uso. Por favor, elige otro.')
 
     return render_template('register.html')
@@ -100,20 +112,21 @@ def login_get():
 @app.post('/login/')
 def login_post():
     error = None
-    username = ''
-    password = ''
+    username = request.form['username']
+    password = request.form['password']
+
     with Session(engine) as session:
         result = session.scalars(
             select(
                 User,
             ).where(
-                User.username == request.form['username']
+                User.username == username
             ).where(
-                User.password == request.form['password'])
+                User.password == password)
         )
         usuario = result.first()
         if usuario is not None:
-            flask_session['logged_in_user'] = usuario.username
+            flask_session['user_id'] = usuario.id  # Establecer la cookie de sesión con el ID del usuario
             flash('¡Te has logueado satisfactoriamente!', 'success')
             return redirect(url_for('principal'))
         else:
@@ -145,24 +158,32 @@ def page_not_found(error):
 
 @app.route('/private')
 def private():
-    if 'logged_in_user' not in flask_session:
+    if 'user_id' not in flask_session:
         return redirect(url_for('login_get'))
     return render_template('private.html')
 
 @app.route('/principal')
 def principal():
-    if 'logged_in_user' not in flask_session:
+    if 'user_id' not in flask_session:
+        # Redirige al login si el usuario no está en sesión
         return redirect(url_for('login_get'))
 
-    with Session(engine) as session:
-        repositorios = session.query(Repositorios).all()
+    user_id = flask_session['user_id']  # Obtener el ID del usuario de la sesión
 
-    return render_template('principal.html', repositorios=repositorios)
+    with Session(engine) as session:
+        # Primero, obtenemos los IDs de repositorios asociados con el usuario
+        repo_ids = session.query(UserRepo.repo_id).filter(UserRepo.user_id == user_id).subquery()
+
+        # Luego, hacemos un join con la tabla Repositorios usando los IDs obtenidos
+        repositorios = session.query(Repositorios).join(repo_ids, Repositorios.id == repo_ids.c.repo_id).all()
+
+        # Enviar los datos de los repositorios a la plantilla HTML
+        return render_template('principal.html', repositorios=repositorios)
 
 
 @app.get('/principal/add')
 def add_get():
-    if 'logged_in_user' not in flask_session:
+    if 'user_id' not in flask_session:
         flash("Por favor, inicia sesión para agregar elementos.")
         return redirect(url_for('login_get'))
 
@@ -171,19 +192,23 @@ def add_get():
 
 @app.post('/principal/add')
 def add_post():
-    if 'logged_in_user' not in flask_session:
+    if 'user_id' not in flask_session:
         flash("Por favor, inicia sesión para agregar repositorios.")
         return redirect(url_for('login_get'))
 
-    repo_input = request.form['repositorio']  # Espera entrada en formato "owner/repo"
-    owner, repo_name = repo_input.split('/')
+    repo_input = request.form['repositorio']
+    try:
+        owner, repo_name = repo_input.split('/')
+    except ValueError:
+        flash("Formato de repositorio incorrecto. Usa el formato 'owner/repo'.")
+        return redirect(url_for('add_get'))
 
-    # Utiliza la API de GitHub para obtener datos del repositorio
+    # Utiliza la API de GitHub para verificar si el repositorio existe
     url = f"https://api.github.com/repos/{owner}/{repo_name}"
     response = requests.get(url)
     if response.status_code != 200:
-        flash("Error al obtener datos del repositorio desde GitHub.")
-        return redirect(url_for('add'))
+        flash("El repositorio no existe en GitHub o está mal escrito.")
+        return redirect(url_for('add_get'))
 
     repo_data = response.json()
 
@@ -199,7 +224,7 @@ def add_post():
 
     with Session(engine) as session:
         try:
-            # Verificar si el repositorio ya existe
+            # Verificar si el repositorio ya existe en la base de datos
             repositorio = session.query(Repositorios).filter_by(owner=owner, repo=repo_name).first()
             if repositorio:
                 # Actualizar los datos existentes
@@ -209,7 +234,7 @@ def add_post():
                 repositorio.default_branch = default_branch
                 repositorio.num_open_issues = num_open_issues
             else:
-                # Crear un nuevo registro
+                # Crear un nuevo registro si el repositorio no existe en la base de datos
                 nuevo_repositorio = Repositorios(
                     owner=owner,
                     repo=repo_name,
@@ -219,9 +244,15 @@ def add_post():
                     default_branch=default_branch,
                     num_open_issues=num_open_issues,
                     fecha_creacion=fecha_creacion,
-                    favorito=False  # valor predeterminado, cambia según sea necesario
+                    favorito=False
                 )
                 session.add(nuevo_repositorio)
+                session.flush()  # Obtener el ID del nuevo repositorio
+
+                # Insertar una fila en la tabla user_repo
+                user_id = flask_session['user_id']  # Obtener el ID del usuario actual
+                user_repo = UserRepo(user_id=user_id, repo_id=nuevo_repositorio.id)
+                session.add(user_repo)
 
             session.commit()
             flash("Repositorio añadido/actualizado exitosamente.")
@@ -235,7 +266,7 @@ def add_post():
 
 @app.get('/principal/detalles/<owner>/<repo>')
 def detalles_get(owner, repo):
-    if 'logged_in_user' not in flask_session:
+    if 'user_id' not in flask_session:
         flash("Por favor, inicia sesión para ver los detalles del repositorio.")
         return redirect(url_for('login_get'))
 
@@ -249,28 +280,33 @@ def detalles_get(owner, repo):
 
 @app.post('/principal/detalles/<owner>/<repo>')
 def detalles_post(owner, repo):
-    if 'logged_in_user' not in flask_session:
+    if 'user_id' not in flask_session:
         return redirect(url_for('login_get'))
 
     url = f"https://api.github.com/repos/{owner}/{repo}"
     response = requests.get(url)
-    if response.status_code != 200:
-        return redirect(url_for('detalles_get', owner=owner, repo=repo))
-
-    repo_data = response.json()
-
-    fecha_ultima_actualizacion = datetime.strptime(repo_data['updated_at'], '%Y-%m-%dT%H:%M:%SZ').date()
-    num_stars = repo_data['stargazers_count']
-    num_forks = repo_data['forks_count']
-    default_branch = repo_data['default_branch']
-    num_open_issues = repo_data['open_issues_count']
 
     with Session(engine) as session:
         repositorio = session.query(Repositorios).filter_by(owner=owner, repo=repo).first()
         if not repositorio:
+            flash("Repositorio no encontrado en la base de datos.")
             return redirect(url_for('principal'))
 
+        if response.status_code != 200:
+            flash(f"El repositorio {owner}/{repo} ya no está disponible en GitHub.")
+            return redirect(url_for('detalles_get', owner=owner, repo=repo))
+
+        repo_data = response.json()
+
+        fecha_ultima_actualizacion = datetime.strptime(repo_data['updated_at'], '%Y-%m-%dT%H:%M:%SZ').date()
+        fecha_creacion = datetime.strptime(repo_data['created_at'], '%Y-%m-%dT%H:%M:%SZ').date()
+        num_stars = repo_data['stargazers_count']
+        num_forks = repo_data['forks_count']
+        default_branch = repo_data['default_branch']
+        num_open_issues = repo_data['open_issues_count']
+
         repositorio.fecha_ultima_actualizacion = fecha_ultima_actualizacion
+        repositorio.fecha_creacion = fecha_creacion
         repositorio.num_stars = num_stars
         repositorio.num_forks = num_forks
         repositorio.default_branch = default_branch
@@ -278,15 +314,16 @@ def detalles_post(owner, repo):
 
         try:
             session.commit()
+            flash("Repositorio actualizado exitosamente.")
         except SQLAlchemyError:
             session.rollback()
-            return redirect(url_for('detalles_get', owner=owner, repo=repo))
+            flash("Error al actualizar el repositorio en la base de datos.")
 
     return redirect(url_for('detalles_get', owner=owner, repo=repo))
 
 @app.route("/logout")
 def logout():
-    flask_session.pop('logged_in_user',None)
+    flask_session.pop('user_id',None)
     return redirect(url_for('login_get'))
 
 
