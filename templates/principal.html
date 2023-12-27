@@ -184,12 +184,18 @@
             <p><span>Favorito:</span>
               {% set es_favorito = False %}
               {% for ur in user_repos %}
-                {% if ur.repo_id == repositorio.id and ur.favorito %}
-                  {% set es_favorito = True %}
-                {% endif %}
+                  {% if ur.repo_id == repositorio.id and ur.favorito %}
+                      {% set es_favorito = True %}
+                  {% endif %}
               {% endfor %}
               {% if es_favorito %} Si {% else %} No {% endif %}
-            </p>
+              {% if es_favorito %} <strong>Debug:</strong> Favorito {% else %} <strong>Debug:</strong> No favorito {% endif %}
+              {% for ur in user_repos %}
+                  <p><strong>Debug:</strong> {{ ur.repo_id }} - {{ ur.favorito }}</p>
+              {% endfor %}
+          </p>
+          
+          
             <a href="{{ url_for('detalles_get', owner=repositorio.owner, repo=repositorio.repo) }}">Ver Detalles</a>
           </div>
         {% endfor %}
