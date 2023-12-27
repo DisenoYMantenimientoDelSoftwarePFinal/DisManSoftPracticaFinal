@@ -17,6 +17,7 @@ from sqlalchemy.orm import mapped_column
 from typing import List, Optional
 from sqlalchemy import select, Date, Column
 from sqlalchemy import create_engine
+from sqlalchemy import func, desc
 from datetime import date
 
 
@@ -175,8 +176,13 @@ def principal():
         # Obtener todos los repositorios que el usuario ha agregado
         repositorios = session.query(Repositorios).join(UserRepo, Repositorios.id == UserRepo.repo_id).filter(UserRepo.user_id == user_id).all()
 
+        # Obtener los tres repositorios más comunes
+        top_repos = session.query(UserRepo.repo_id, func.count(UserRepo.user_id).label('user_count')).group_by(UserRepo.repo_id).order_by(desc('user_count')).limit(3).all()
+
+        top_repo_details = session.query(Repositorios).filter(Repositorios.id.in_([repo_id for repo_id, _ in top_repos])).all()
+        
         # Enviar los datos de los repositorios y los favoritos a la plantilla HTML
-        return render_template('principal.html', repositorios=repositorios, favoritos=favoritos)
+        return render_template('principal.html', repositorios=repositorios, favoritos=favoritos, top_repo_details=top_repo_details)
 
 
 

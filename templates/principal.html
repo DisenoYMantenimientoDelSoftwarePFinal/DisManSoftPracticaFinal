@@ -113,42 +113,63 @@
 
     <script>
       function logout() {
-          window.location.href = '/logout';
+        window.location.href = "/logout";
       }
     </script>
 
     <div class="container">
+      <h2>Repositorios más comunes</h2>
+      <div class="list-group">
+        {%if top_repo_details %} {% for repo in top_repo_details %}
+
+        <a href="https://github.com/{{ repo.owner }}/{{ repo.repo }}">
+          {{ repo.owner }}/{{ repo.repo }}
+        </a>
+
+        {% endfor %}{% else %}
+        <p>Aun no hay repositorios</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="container">
       <div class="header">Lista de Repositorios</div>
-      <a href="{{ url_for('add_get') }}" class="add-button">Añadir Repositorio</a>
+      <a href="{{ url_for('add_get') }}" class="add-button"
+        >Añadir Repositorio</a
+      >
 
       <!-- Mensajes Flash -->
-      {% with messages = get_flashed_messages() %}
-      {% if messages %}
+      {% with messages = get_flashed_messages() %} {% if messages %}
       <!-- Código para mostrar mensajes flash -->
-      {% endif %}
-      {% endwith %}
+      {% endif %} {% endwith %} {% if repositorios %} {% for repositorio in
+      repositorios %}
+      <div class="detail">
+        <p><span>Nombre del Repositorio:</span> {{ repositorio.repo }}</p>
+        <p><span>Propietario:</span> {{ repositorio.owner }}</p>
+        <p><span>Número de Estrellas:</span> {{ repositorio.num_stars }}</p>
+        <p><span>Número de Forks:</span> {{ repositorio.num_forks }}</p>
+        <p>
+          <span>Fecha de Última Actualización:</span> {{
+          repositorio.fecha_ultima_actualizacion }}
+        </p>
 
-      {% if repositorios %}
-        {% for repositorio in repositorios %}
-          <div class="detail">
-            <p><span>Nombre del Repositorio:</span> {{ repositorio.repo }}</p>
-            <p><span>Propietario:</span> {{ repositorio.owner }}</p>
-            <p><span>Número de Estrellas:</span> {{ repositorio.num_stars }}</p>
-            <p><span>Número de Forks:</span> {{ repositorio.num_forks }}</p>
-            <p><span>Fecha de Última Actualización:</span> {{ repositorio.fecha_ultima_actualizacion }}</p>
+        <!-- Botón para marcar como favorito -->
+        <form
+          action="{{ url_for('alternar_favorito', repo_id=repositorio.id) }}"
+          method="post"
+        >
+          <button type="submit">
+            {{ '★' if favoritos.get(repositorio.id, False) else '☆' }}
+          </button>
+        </form>
 
-            <!-- Botón para marcar como favorito -->
-            <form action="{{ url_for('alternar_favorito', repo_id=repositorio.id) }}" method="post">
-              <button type="submit">
-                  {{ '★' if favoritos.get(repositorio.id, False) else '☆' }}
-              </button>
-            </form>
-
-            <a href="{{ url_for('detalles_get', owner=repositorio.owner, repo=repositorio.repo) }}">Ver Detalles</a>
-          </div>
-        {% endfor %}
-      {% else %}
-        <p>No hay repositorios añadidos.</p>
+        <a
+          href="{{ url_for('detalles_get', owner=repositorio.owner, repo=repositorio.repo) }}"
+          >Ver Detalles</a
+        >
+      </div>
+      {% endfor %} {% else %}
+      <p>No hay repositorios añadidos.</p>
       {% endif %}
     </div>
 
