@@ -10,6 +10,7 @@ from flask_session import Session
 
 from markupsafe import escape
 
+from sqlalchemy.orm import Session
 from sqlalchemy import String, ForeignKey
 from sqlalchemy.orm import DeclarativeBase, Mapped, relationship
 from sqlalchemy.orm import mapped_column
@@ -34,7 +35,6 @@ class Repositorios(Base):
     owner = Column(String(30))
     repo = Column(String(30))
     fecha_ultima_actualizacion = Column(Date)
-    favorito = Column(Boolean, default=False)
     num_forks = Column(Integer, default=0, nullable=True)
     num_stars = Column(Integer, default=0, nullable=True)
     default_branch = Column(String(50))
@@ -46,6 +46,7 @@ class UserRepo(Base):
     __tablename__ = "user_repo"
     user_id = Column(Integer, ForeignKey("user_account.id"), primary_key=True)
     repo_id = Column(Integer, ForeignKey("repositorios.id"), primary_key=True)
+    favorito = Column(Boolean, default=False)
 
     # Definir relaciones con las tablas User y Repositorios
     user = relationship("User", backref="user_repos")
@@ -54,7 +55,7 @@ class UserRepo(Base):
 engine = create_engine("sqlite:///./BD/githubExplorer.sqlite", echo=True)
 Base.metadata.create_all(engine)
 
-from sqlalchemy.orm import Session
+
 
 
 
@@ -170,9 +171,11 @@ def principal():
 
         # Luego, hacemos un join con la tabla Repositorios usando los IDs obtenidos
         repositorios = session.query(Repositorios).join(repo_ids, Repositorios.id == repo_ids.c.repo_id).all()
+        
+        user_repos = session.query(UserRepo).filter(UserRepo.user_id == user_id).all()
 
         # Enviar los datos de los repositorios a la plantilla HTML
-        return render_template('principal.html', repositorios=repositorios)
+        return render_template('principal.html', repositorios=repositorios, user_repos=user_repos)
 
 
 @app.get('/principal/add')
@@ -237,8 +240,7 @@ def add_post():
                     num_forks=num_forks,
                     default_branch=default_branch,
                     num_open_issues=num_open_issues,
-                    fecha_creacion=fecha_creacion,
-                    favorito=False
+                    fecha_creacion=fecha_creacion
                 )
                 session.add(nuevo_repositorio)
                 session.flush()  # Obtener el ID del nuevo repositorio
@@ -274,8 +276,11 @@ def detalles_get(owner, repo):
         if not repositorio:
             flash("Repositorio no encontrado.")
             return redirect(url_for('principal'))
+        
+        #Para revisar si el repositorio es favorito
+        user_repo = session.query(UserRepo).filter_by(user_id=flask_session['user_id'], repo_id=repositorio.id).first()
 
-    return render_template('detalles.html', repositorio=repositorio)
+    return render_template('detalles.html', repositorio=repositorio, user_repo=user_repo)
 
 @app.post('/principal/detalles/<owner>/<repo>')
 def detalles_post(owner, repo):
@@ -317,6 +322,32 @@ def detalles_post(owner, repo):
         except SQLAlchemyError:
             session.rollback()
             flash("Error al actualizar el repositorio en la base de datos.")
+
+    return redirect(url_for('detalles_get', owner=owner, repo=repo))
+
+
+
+@app.post('/alternar_favorito/<int:repo_id>')
+def alternar_favorito(repo_id):
+    if 'user_id' not in flask_session:
+        flash("Por favor, inicia sesión para marcar repositorios como favoritos.")
+        return redirect(url_for('login_get'))
+
+    with Session(engine) as session:
+        user_repo = session.query(UserRepo).filter_by(user_id=flask_session['user_id'], repo_id=repo_id).first()
+        if user_repo is None:
+            flash('El repositorio no existe')
+            return redirect(url_for('principal'))
+
+        # Alternar el estado de favorito
+        user_repo.favorito = not user_repo.favorito
+        
+        #Obtener el propietario y el nombre del repositorio
+        repositorio = session.query(Repositorios).filter_by(id=repo_id).first()
+        owner = repositorio.owner
+        repo = repositorio.repo
+        
+        session.commit()
 
     return redirect(url_for('detalles_get', owner=owner, repo=repo))
 

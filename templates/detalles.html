@@ -1,135 +1,162 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>Detalles del Repositorio</title>
     <style>
-        body {
-            font-family: 'Open Sans', sans-serif;
-            background-color: #f2f2f2;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            overflow: auto; /* Permite desplazamiento si es necesario */
-        }
+      body {
+        font-family: "Open Sans", sans-serif;
+        background-color: #f2f2f2;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        overflow: auto; /* Permite desplazamiento si es necesario */
+      }
 
-        .container {
-            background-color: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            padding: 20px;
-            max-width: 600px; /* Ajuste de tamaño */
-            width: 100%;
-        }
+      .container {
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        padding: 20px;
+        max-width: 600px; /* Ajuste de tamaño */
+        width: 100%;
+      }
 
-        .header {
-            background: linear-gradient(135deg, #6e8efb, #a777e3);
-            color: white;
-            padding: 20px;
-            border-radius: 8px;
-            text-align: center;
-            font-size: 25px; /* Tamaño de fuente reducido */
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
+      .header {
+        background: linear-gradient(135deg, #6e8efb, #a777e3);
+        color: white;
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+        font-size: 25px; /* Tamaño de fuente reducido */
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
 
-        .detail {
-            background-color: #e0e0e0;
-            padding: 10px; /* Ajuste de padding */
-            border-radius: 8px;
-            margin-bottom: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
+      .detail {
+        background-color: #e0e0e0;
+        padding: 10px; /* Ajuste de padding */
+        border-radius: 8px;
+        margin-bottom: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
 
-        .detail p {
-            margin: 0;
-            font-size: 16px; /* Tamaño de fuente reducido */
-            color: #333;
-        }
+      .detail p {
+        margin: 0;
+        font-size: 16px; /* Tamaño de fuente reducido */
+        color: #333;
+      }
 
-        .detail span {
-            font-weight: bold;
-        }
+      .detail span {
+        font-weight: bold;
+      }
 
-        .button-container {
-            text-align: center;
-            margin-top: 20px;
-        }
+      .button-container {
+        text-align: center;
+        margin-top: 20px;
+      }
 
-        button {
-            background-color: #4CAF50;
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px; /* Tamaño de fuente reducido */
-            transition: background-color 0.3s;
-        }
+      button {
+        background-color: #4caf50;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px; /* Tamaño de fuente reducido */
+        transition: background-color 0.3s;
+      }
 
-        button:hover {
-            background-color: #45a049;
-        }
+      button:hover {
+        background-color: #45a049;
+      }
 
-        .footer {
-            text-align: center;
-            padding-top: 10px; /* Ajuste de padding */
-        }
+      .footer {
+        text-align: center;
+        padding-top: 10px; /* Ajuste de padding */
+      }
 
-        .footer a {
-            color: #6e8efb;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 14px; /* Tamaño de fuente reducido */
-        }
+      .footer a {
+        color: #6e8efb;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 14px; /* Tamaño de fuente reducido */
+      }
 
-        .footer a:hover {
-            text-decoration: underline;
-        }
-        /* Estilo para mostrar mensajes flash */
-        .flash-message {
-            padding: 10px;
-            background-color: #f44336; /* Rojo para errores */
-            color: white;
-            margin-bottom: 15px;
-            text-align: center;
-            border-radius: 5px;
-        }
+      .footer a:hover {
+        text-decoration: underline;
+      }
+      /* Estilo para mostrar mensajes flash */
+      .flash-message {
+        padding: 10px;
+        background-color: #f44336; /* Rojo para errores */
+        color: white;
+        margin-bottom: 15px;
+        text-align: center;
+        border-radius: 5px;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <!-- Bloque para mostrar mensajes flash -->
-        {% with messages = get_flashed_messages() %}
-          {% if messages %}
-            {% for message in messages %}
-              <div class="flash-message">{{ message }}</div>
-            {% endfor %}
-          {% endif %}
-        {% endwith %}
+      <!-- Bloque para mostrar mensajes flash -->
+      {% with messages = get_flashed_messages() %} {% if messages %} {% for
+      message in messages %}
+      <div class="flash-message">{{ message }}</div>
+      {% endfor %} {% endif %} {% endwith %}
 
-
-        <div class="header">Detalles del Repositorio: {{ repositorio.repo }}</div>
-        <div class="detail"><p><span>Propietario:</span> {{ repositorio.owner }}</p></div>
-        <div class="detail"><p><span>Número de Estrellas:</span> {{ repositorio.num_stars }}</p></div>
-        <div class="detail"><p><span>Número de Forks:</span> {{ repositorio.num_forks }}</p></div>
-        <div class="detail"><p><span>Rama por Defecto:</span> {{ repositorio.default_branch }}</p></div>
-        <div class="detail"><p><span>Número de Issues Abiertos:</span> {{ repositorio.num_open_issues }}</p></div>
-        <div class="detail"><p><span>Fecha de Última Actualización:</span> {{ repositorio.fecha_ultima_actualizacion }}</p></div>
-        <div class="detail"><p><span>Fecha de Creación:</span> {{ repositorio.fecha_creacion }}</p></div>
-        <div class="detail"><p><span>Favorito:</span> {{ 'Sí' if repositorio.favorito else 'No' }}</p></div>
-
-        <div class="button-container">
-            <form action="{{ url_for('detalles_post', owner=repositorio.owner, repo=repositorio.repo) }}" method="post">
-                <button type="submit">Actualizar Detalles</button>
-            </form>
-        </div>
-        <div class="footer">
-            <a href="{{ url_for('principal') }}">Volver a la Página Principal</a>
-        </div>
+      <div class="header">Detalles del Repositorio: {{ repositorio.repo }}</div>
+      <div class="detail">
+        <p><span>Propietario:</span> {{ repositorio.owner }}</p>
+      </div>
+      <div class="detail">
+        <p><span>Número de Estrellas:</span> {{ repositorio.num_stars }}</p>
+      </div>
+      <div class="detail">
+        <p><span>Número de Forks:</span> {{ repositorio.num_forks }}</p>
+      </div>
+      <div class="detail">
+        <p><span>Rama por Defecto:</span> {{ repositorio.default_branch }}</p>
+      </div>
+      <div class="detail">
+        <p>
+          <span>Número de Issues Abiertos:</span> {{ repositorio.num_open_issues
+          }}
+        </p>
+      </div>
+      <div class="detail">
+        <p>
+          <span>Fecha de Última Actualización:</span> {{
+          repositorio.fecha_ultima_actualizacion }}
+        </p>
+      </div>
+      <div class="detail">
+        <p><span>Fecha de Creación:</span> {{ repositorio.fecha_creacion }}</p>
+      </div>
+      <div class="button-container">
+        <form
+          action="{{ url_for('alternar_favorito', repo_id=repositorio.id) }}"
+          method="post"
+        >
+          <button type="submit">
+            {{ '★' if user_repo.favorito else '☆' }}
+          </button>
+        </form>
+      </div>
+      <div class="button-container">
+        <form
+          action="{{ url_for('detalles_post', owner=repositorio.owner, repo=repositorio.repo) }}"
+          method="post"
+        >
+          <button type="submit">Actualizar Detalles</button>
+        </form>
+      </div>
+      <div class="footer">
+        <a href="{{ url_for('principal') }}">Volver a la Página Principal</a>
+      </div>
     </div>
-</body>
+  </body>
 </html>
