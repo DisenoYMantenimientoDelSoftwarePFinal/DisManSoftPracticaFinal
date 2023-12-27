@@ -137,15 +137,13 @@
         <p><span>Fecha de Creación:</span> {{ repositorio.fecha_creacion }}</p>
       </div>
       <div class="button-container">
-        <form
-          action="{{ url_for('alternar_favorito', repo_id=repositorio.id) }}"
-          method="post"
-        >
-          <button type="submit">
-            {{ '★' if user_repo.favorito else '☆' }}
-          </button>
+        <form action="{{ url_for('alternar_favorito', repo_id=repositorio.id) }}" method="post">
+            <button type="submit">
+                {{ '★' if user_repo.favorito else '☆' }}
+            </button>
         </form>
-      </div>
+    </div>
+    
       <div class="button-container">
         <form
           action="{{ url_for('detalles_post', owner=repositorio.owner, repo=repositorio.repo) }}"

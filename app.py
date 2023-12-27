@@ -178,6 +178,7 @@ def principal():
         return render_template('principal.html', repositorios=repositorios, user_repos=user_repos)
 
 
+
 @app.get('/principal/add')
 def add_get():
     if 'user_id' not in flask_session:
@@ -342,14 +343,21 @@ def alternar_favorito(repo_id):
         # Alternar el estado de favorito
         user_repo.favorito = not user_repo.favorito
         
-        #Obtener el propietario y el nombre del repositorio
+        # Obtener el propietario y el nombre del repositorio
         repositorio = session.query(Repositorios).filter_by(id=repo_id).first()
         owner = repositorio.owner
         repo = repositorio.repo
         
-        session.commit()
+        try:
+            session.commit()
+            flash("Estado de favorito actualizado exitosamente.")
+        except SQLAlchemyError as e:
+            session.rollback()
+            flash("Error al actualizar el estado de favorito en la base de datos.")
 
     return redirect(url_for('detalles_get', owner=owner, repo=repo))
+
+
 
 @app.route("/logout")
 def logout():
