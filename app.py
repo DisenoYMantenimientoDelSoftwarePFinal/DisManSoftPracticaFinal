@@ -292,6 +292,9 @@ def detalles_post(owner, repo):
     if 'user_id' not in flask_session:
         return redirect(url_for('login_get'))
 
+    url = f"https://api.github.com/repos/{owner}/{repo}"
+    response = requests.get(url)
+
     with Session(engine) as session:
         repositorio = session.query(Repositorios).filter_by(owner=owner, repo=repo).first()
         if not repositorio:
@@ -301,9 +304,34 @@ def detalles_post(owner, repo):
         user_repo = session.query(UserRepo).filter_by(user_id=flask_session['user_id'], repo_id=repositorio.id).first()
         if not user_repo:
             flash("No tienes este repositorio en tu lista.")
-            return redirect(url_for('principal'))
+            return redirect(url_for('principal'))   
 
-        # Resto del código para actualizar el repositorio...
+        if response.status_code != 200:
+            flash(f"El repositorio {owner}/{repo} ya no está disponible en GitHub.")
+            return redirect(url_for('detalles_get', owner=owner, repo=repo))
+
+        repo_data = response.json()
+
+        fecha_ultima_actualizacion = datetime.strptime(repo_data['updated_at'], '%Y-%m-%dT%H:%M:%SZ').date()
+        fecha_creacion = datetime.strptime(repo_data['created_at'], '%Y-%m-%dT%H:%M:%SZ').date()
+        num_stars = repo_data['stargazers_count']
+        num_forks = repo_data['forks_count']
+        default_branch = repo_data['default_branch']
+        num_open_issues = repo_data['open_issues_count']
+
+        repositorio.fecha_ultima_actualizacion = fecha_ultima_actualizacion
+        repositorio.fecha_creacion = fecha_creacion
+        repositorio.num_stars = num_stars
+        repositorio.num_forks = num_forks
+        repositorio.default_branch = default_branch
+        repositorio.num_open_issues = num_open_issues
+
+        try:
+            session.commit()
+            flash("Repositorio actualizado exitosamente.")
+        except SQLAlchemyError:
+            session.rollback()
+            flash("Error al actualizar el repositorio en la base de datos.")
 
         return redirect(url_for('detalles_get', owner=owner, repo=repo))
 
