@@ -24,7 +24,7 @@
         max-width: 600px;
         width: 100%;
         overflow-y: auto;
-        position: relative; /* Añadido para posicionar correctamente el botón */
+        position: relative;
       }
 
       .header {
@@ -86,7 +86,6 @@
         background-color: #45a049;
       }
 
-      /* Estilo para el botón de Logout */
       .logout-button {
         background-color: #6e8efb;
         color: #fff;
@@ -106,60 +105,20 @@
       .logout-button:hover {
         background-color: #5767d5;
       }
-
-      /* Copia de estilos para la ventana emergente */
-      .modal {
-        display: none;
-        position: fixed;
-        z-index: 1;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        overflow: auto;
-        background-color: rgb(0, 0, 0);
-        background-color: rgba(0, 0, 0, 0.4);
-      }
-
-      .modal-content {
-        background-color: #fefefe;
-        margin: 15% auto;
-        padding: 20px;
-        border: 1px solid #888;
-        width: 80%;
-      }
-
-      .close {
-        color: #aaa;
-        float: right;
-        font-size: 28px;
-        font-weight: bold;
-      }
-
-      .close:hover,
-      .close:focus {
-        color: black;
-        text-decoration: none;
-        cursor: pointer;
-      }
     </style>
   </head>
   <body>
-    <!-- Botón de Logout -->
     <button onclick="logout()" class="logout-button">Log Out</button>
 
     <script>
     function logout() {
-        window.location.href = '/logout';  // Reemplaza '/logout' con la ruta correcta si es diferente
+        window.location.href = '/logout';
     }
     </script>
     <div class="container">
-      
-
       <div class="header">Lista de Repositorios</div>
       <a href="{{ url_for('add_get') }}" class="add-button">Añadir Repositorio</a>
 
-      <!-- Mensajes Flash en ventana emergente -->
       {% with messages = get_flashed_messages() %}
       {% if messages %}
       <div id="myModal" class="modal">
@@ -181,21 +140,7 @@
             <p><span>Número de Estrellas:</span> {{ repositorio.num_stars }}</p>
             <p><span>Número de Forks:</span> {{ repositorio.num_forks }}</p>
             <p><span>Fecha de Última Actualización:</span> {{ repositorio.fecha_ultima_actualizacion }}</p>
-            <p><span>Favorito:</span>
-              {% set es_favorito = False %}
-              {% for ur in user_repos %}
-                  {% if ur.repo_id == repositorio.id and ur.favorito %}
-                      {% set es_favorito = True %}
-                  {% endif %}
-              {% endfor %}
-              {% if es_favorito %} Si {% else %} No {% endif %}
-              {% if es_favorito %} <strong>Debug:</strong> Favorito {% else %} <strong>Debug:</strong> No favorito {% endif %}
-              {% for ur in user_repos %}
-                  <p><strong>Debug:</strong> {{ ur.repo_id }} - {{ ur.favorito }}</p>
-              {% endfor %}
-          </p>
-          
-          
+            <p><span>Favorito:</span> {{ 'Si' if favoritos.get(repositorio.id, False) else 'No' }}</p>
             <a href="{{ url_for('detalles_get', owner=repositorio.owner, repo=repositorio.repo) }}">Ver Detalles</a>
           </div>
         {% endfor %}
@@ -203,25 +148,5 @@
         <p>No hay repositorios añadidos.</p>
       {% endif %}
     </div>
-
-    <script>
-      // Código JavaScript para el manejo de la ventana emergente
-      var modal = document.getElementById("myModal");
-      var span = document.getElementsByClassName("close")[0];
-
-      span.onclick = function() {
-        modal.style.display = "none";
-      }
-
-      window.onclick = function(event) {
-        if (event.target == modal) {
-          modal.style.display = "none";
-        }
-      }
-
-      if (modal) {
-        modal.style.display = "block";
-      }
-    </script>
   </body>
 </html>

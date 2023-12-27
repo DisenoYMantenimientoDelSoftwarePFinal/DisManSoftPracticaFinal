@@ -166,16 +166,17 @@ def principal():
     user_id = flask_session['user_id']  # Obtener el ID del usuario de la sesión
 
     with Session(engine) as session:
-        # Primero, obtenemos los IDs de repositorios asociados con el usuario
-        repo_ids = session.query(UserRepo.repo_id).filter(UserRepo.user_id == user_id).subquery()
-
-        # Luego, hacemos un join con la tabla Repositorios usando los IDs obtenidos
-        repositorios = session.query(Repositorios).join(repo_ids, Repositorios.id == repo_ids.c.repo_id).all()
-        
+        # Obtener todos los UserRepo del usuario actual
         user_repos = session.query(UserRepo).filter(UserRepo.user_id == user_id).all()
 
-        # Enviar los datos de los repositorios a la plantilla HTML
-        return render_template('principal.html', repositorios=repositorios, user_repos=user_repos)
+        # Crear un diccionario para mapear repo_id a estado de favorito
+        favoritos = {ur.repo_id: ur.favorito for ur in user_repos}
+
+        # Obtener todos los repositorios que el usuario ha agregado
+        repositorios = session.query(Repositorios).join(UserRepo, Repositorios.id == UserRepo.repo_id).filter(UserRepo.user_id == user_id).all()
+
+        # Enviar los datos de los repositorios y los favoritos a la plantilla HTML
+        return render_template('principal.html', repositorios=repositorios, favoritos=favoritos)
 
 
 
