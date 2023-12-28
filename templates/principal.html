@@ -99,7 +99,7 @@
         display: inline-block;
         position: absolute;
         top: 10px;
-        right: 10px;
+        left: 10px;
         transition: background-color 0.3s;
       }
 
@@ -127,7 +127,7 @@
         padding: 20px;
         border: 1px solid #888;
         width: 80%;
-      } 
+      }
 
       .close {
         color: #aaa;
@@ -154,27 +154,29 @@
       }
     </script>
 
-    
     <div class="container">
       <div class="header">Repositorios más comunes</div>
-      {% if top_repo_details %}
+      <div class="list-group">
+        {% if top_repos %}
         <ol>
-          {% for repo in top_repo_details %}
-            <li>
-              <a href="https://github.com/{{ repo.owner }}/{{ repo.repo }}">
-                {{ repo.owner }}/{{ repo.repo }}
-              </a>
-            </li>
-          {% endfor %}
+          {% for repo_id, count in top_repos %} {% for repo in top_repo_details
+          %} {% if repo.id == repo_id %}
+          <li>
+            <a href="https://github.com/{{ repo.owner }}/{{ repo.repo }}">
+              {{ repo.owner }}/{{ repo.repo }}
+            </a>
+            - {{count}} usuarios
+          </li>
+          {% endif %} {% endfor %} {% endfor %}
         </ol>
-      {% else %}
-        <p>Aún no hay repositorios</p>
-      {% endif %}
+        {% else %}
+        <p>No hay repositorios para mostrar.</p>
+        {% endif %}
+      </div>
     </div>
 
     <!-- Mensajes Flash -->
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
+    {% with messages = get_flashed_messages() %} {% if messages %}
     <div id="myModal" class="modal">
       <div class="modal-content">
         <span class="close">&times;</span>
@@ -183,17 +185,17 @@
         {% endfor %}
       </div>
     </div>
-    {% endif %}
-    {% endwith %} 
+    {% endif %} {% endwith %}
 
     <div class="container">
       <div class="header">Lista de Repositorios</div>
-      <div style="text-align: center;">
-        <a href="{{ url_for('add_get') }}" class="add-button">Añadir Repositorio</a>
+      <div style="text-align: center">
+        <a href="{{ url_for('add_get') }}" class="add-button"
+          >Añadir Repositorio</a
+        >
       </div>
-      
-      {% if repositorios %} {% for repositorio in
-      repositorios %}
+
+      {% if repositorios %} {% for repositorio in repositorios %}
       <div class="detail">
         <p><span>Nombre del Repositorio:</span> {{ repositorio.repo }}</p>
         <p><span>Propietario:</span> {{ repositorio.owner }}</p>
@@ -229,15 +231,15 @@
       var modal = document.getElementById("myModal");
       var span = document.getElementsByClassName("close")[0];
 
-      span.onclick = function() {
+      span.onclick = function () {
         modal.style.display = "none";
-      }
+      };
 
-      window.onclick = function(event) {
+      window.onclick = function (event) {
         if (event.target == modal) {
           modal.style.display = "none";
         }
-      }
+      };
 
       if (modal) {
         modal.style.display = "block";

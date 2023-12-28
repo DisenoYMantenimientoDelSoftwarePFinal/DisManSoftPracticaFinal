@@ -13,7 +13,7 @@
         justify-content: center;
         align-items: center;
         height: 100vh;
-        overflow: auto; /* Permite desplazamiento si es necesario */
+        overflow: auto;
       }
 
       .container {
@@ -21,7 +21,7 @@
         border-radius: 12px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
         padding: 20px;
-        max-width: 600px; /* Ajuste de tamaño */
+        max-width: 600px;
         width: 100%;
       }
 
@@ -31,14 +31,14 @@
         padding: 20px;
         border-radius: 8px;
         text-align: center;
-        font-size: 25px; /* Tamaño de fuente reducido */
+        font-size: 25px;
         font-weight: bold;
         margin-bottom: 10px;
       }
 
       .detail {
         background-color: #e0e0e0;
-        padding: 10px; /* Ajuste de padding */
+        padding: 10px;
         border-radius: 8px;
         margin-bottom: 10px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -46,7 +46,7 @@
 
       .detail p {
         margin: 0;
-        font-size: 16px; /* Tamaño de fuente reducido */
+        font-size: 16px;
         color: #333;
       }
 
@@ -66,7 +66,7 @@
         padding: 10px 20px;
         border-radius: 6px;
         cursor: pointer;
-        font-size: 14px; /* Tamaño de fuente reducido */
+        font-size: 14px;
         transition: background-color 0.3s;
       }
 
@@ -76,27 +76,41 @@
 
       .footer {
         text-align: center;
-        padding-top: 10px; /* Ajuste de padding */
+        padding-top: 10px;
       }
 
       .footer a {
         color: #6e8efb;
         text-decoration: none;
         font-weight: bold;
-        font-size: 14px; /* Tamaño de fuente reducido */
+        font-size: 14px;
       }
 
       .footer a:hover {
         text-decoration: underline;
       }
-      /* Estilo para mostrar mensajes flash */
+
       .flash-message {
         padding: 10px;
-        background-color: #f44336; /* Rojo para errores */
+        background-color: #f44336;
         color: white;
         margin-bottom: 15px;
         text-align: center;
         border-radius: 5px;
+      }
+
+      .favoritos-button {
+        background-color: orange;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background-color 0.3s;
+      }
+      .favoritos-button:hover {
+        background-color: #e5e500;
       }
     </style>
   </head>
@@ -137,13 +151,16 @@
         <p><span>Fecha de Creación:</span> {{ repositorio.fecha_creacion }}</p>
       </div>
       <div class="button-container">
-        <form action="{{ url_for('alternar_favorito', repo_id=repositorio.id) }}" method="post">
-            <button type="submit">
-                {{ '★' if user_repo.favorito else '☆' }}
-            </button>
+        <form
+          action="{{ url_for('alternar_favorito', repo_id=repositorio.id) }}"
+          method="post"
+        >
+          <button type="submit" class="favoritos-button">
+            {{ '★' if user_repo.favorito else '☆' }}
+          </button>
         </form>
-    </div>
-    
+      </div>
+
       <div class="button-container">
         <form
           action="{{ url_for('detalles_post', owner=repositorio.owner, repo=repositorio.repo) }}"

@@ -182,7 +182,7 @@ def principal():
         top_repo_details = session.query(Repositorios).filter(Repositorios.id.in_([repo_id for repo_id, _ in top_repos])).all()
         
         # Enviar los datos de los repositorios y los favoritos a la plantilla HTML
-        return render_template('principal.html', repositorios=repositorios, favoritos=favoritos, top_repo_details=top_repo_details)
+        return render_template('principal.html', repositorios=repositorios, favoritos=favoritos, top_repo_details=top_repo_details, top_repos = top_repos)
 
 
 
