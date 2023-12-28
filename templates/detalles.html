@@ -16,6 +16,23 @@
         overflow: auto;
       }
 
+      .top-bar {
+        background-color: #ffffff;
+        padding: 10px;
+        width: 100%;
+        height: 50px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+      } 
+
+
       .container {
         background-color: #ffffff;
         border-radius: 12px;
@@ -112,9 +129,42 @@
       .favoritos-button:hover {
         background-color: #e5e500;
       }
+
+      .logout-button {
+        background-color: #6e8efb;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+        text-decoration: none;
+        display: inline-block;
+        position: absolute;
+        top: 20px;
+        right: 40px;
+        transition: background-color 0.3s;
+      }
+
+      .logout-button:hover {
+        background-color: #5767d5;
+      }
+
     </style>
   </head>
   <body>
+    <div class="top-bar">
+      <!-- Botón de Logout -->
+      <button onclick="logout()" class="logout-button">Log Out</button>
+    </div>
+
+    <script>
+      function logout() {
+          window.location.href = "/logout";
+      }
+    </script>
+
+
     <div class="container">
       <!-- Bloque para mostrar mensajes flash -->
       {% with messages = get_flashed_messages() %} {% if messages %} {% for
