@@ -5,7 +5,7 @@ y gestionar repositorios de GitHub, y proporciona información detallada sobre l
 
 Autores:
  - Víctor González Del Campo
-  - Alberto Santos Martínez
+ - Alberto Santos Martínez
  - Mario Sanz Pérez
 """
 from datetime import datetime
@@ -26,7 +26,7 @@ class Base(DeclarativeBase):
     """
     Clase base para la definición de modelos de la base de datos.
     """
-    pass
+
 
 class User(Base):
     """
@@ -99,11 +99,6 @@ Base.metadata.create_all(engine)
 
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
-
-# Configura flask_session para usar cookies de sesión
-app.config['SESSION_TYPE'] = 'filesystem'  # Puedes cambiar el tipo según tus necesidades
-Session(app)
-
 
 
 @app.route("/")
@@ -219,9 +214,8 @@ def login_post():
             flask_session['user_id'] = usuario.id
             flash('¡Te has logueado satisfactoriamente!', 'success')
             return redirect(url_for('principal'))
-        else:
-            error = 'Nombre de usuario o contraseña incorrectos'
-            flash('Inicio de sesión fallido. ' + error, 'error')
+        error = 'Nombre de usuario o contraseña incorrectos'
+        flash('Inicio de sesión fallido. ' + error, 'error')
 
     return render_template(
         'login.html',
@@ -232,7 +226,7 @@ def login_post():
 
 
 @app.errorhandler(404)
-def page_not_found():
+def page_not_found(error):
     """
     Manejador de errores para la página no encontrada (404).
     Renderiza la plantilla 'pagina_no_encontrada.html' y devuelve el código de estado 404.
@@ -240,27 +234,7 @@ def page_not_found():
     Returns:
         - Una instancia de la plantilla 'pagina_no_encontrada.html' con el código de estado 404.
     """
-    return render_template('pagina_no_encontrada.html'), 404
-
-
-
-# TODO: Eliminar esta ruta de prueba no lo borro porque tambien hay que eliminar el template
-@app.route('/private')
-def private():
-    """
-    Función que maneja la ruta '/private' de la aplicación web.
-
-    Verifica si el usuario ha iniciado sesión. Si no ha iniciado sesión, 
-    redirige al usuario a la página de inicio de sesión.
-    Si el usuario ha iniciado sesión, renderiza la plantilla 'private.html'.
-
-    Returns:
-        - Una instancia de la plantilla 'private.html' si el usuario ha iniciado sesión.
-        - Redirecciona al usuario a la página de inicio de sesión si no ha iniciado sesión.
-    """
-    if 'user_id' not in flask_session:
-        return redirect(url_for('login_get'))
-    return render_template('private.html')
+    return render_template('pagina_no_encontrada.html'), error.code
 
 
 
@@ -383,28 +357,28 @@ def add_post():
 
     # Utiliza la API de GitHub para verificar si el repositorio existe
     url = f"https://api.github.com/repos/{owner}/{repo_name}"
-    response = requests.get(url)
+    response = requests.get(url, timeout=5)
     if response.status_code != 200:
         flash("El repositorio no existe en GitHub o está mal escrito.")
         return redirect(url_for('add_get'))
 
     repo_data = response.json()
 
-    # Convertir las fechas a objetos de fecha
-    fecha_ultima_actualizacion = datetime.strptime(
-        repo_data['updated_at'],
-        '%Y-%m-%dT%H:%M:%SZ'
-        ).date()
-    fecha_creacion = datetime.strptime(
-        repo_data['created_at'],
-        '%Y-%m-%dT%H:%M:%SZ'
-        ).date()
-
-    # Extraer datos adicionales
-    num_stars = repo_data['stargazers_count']
-    num_forks = repo_data['forks_count']
-    default_branch = repo_data['default_branch']
-    num_open_issues = repo_data['open_issues_count']
+    repo_info = {
+        # Convertir las fechas a objetos de fecha
+        'fecha_ultima_actualizacion': datetime.strptime(
+                                    repo_data['updated_at'],
+                                    '%Y-%m-%dT%H:%M:%SZ'
+                                    ).date(),
+        'num_stars': repo_data['stargazers_count'],
+        'num_forks': repo_data['forks_count'],
+        'default_branch': repo_data['default_branch'],
+        'num_open_issues': repo_data['open_issues_count'],
+        'fecha_creacion': datetime.strptime(
+                        repo_data['created_at'],
+                        '%Y-%m-%dT%H:%M:%SZ'
+                        ).date()
+    }
 
     with Session(engine) as session:
         try:
@@ -415,22 +389,15 @@ def add_post():
                 ).first()
             if repositorio:
                 # Actualizar los datos existentes
-                repositorio.fecha_ultima_actualizacion = fecha_ultima_actualizacion
-                repositorio.num_stars = num_stars
-                repositorio.num_forks = num_forks
-                repositorio.default_branch = default_branch
-                repositorio.num_open_issues = num_open_issues
+                # Actualizar los datos existentes
+                for key, value in repo_info.items():
+                    setattr(repositorio, key, value)
             else:
                 # Crear un nuevo registro si el repositorio no existe en la base de datos
                 nuevo_repositorio = Repositorios(
                     owner = owner,
                     repo = repo_name,
-                    fecha_ultima_actualizacion = fecha_ultima_actualizacion,
-                    num_stars = num_stars,
-                    num_forks = num_forks,
-                    default_branch = default_branch,
-                    num_open_issues = num_open_issues,
-                    fecha_creacion = fecha_creacion
+                    **repo_info
                 )
                 session.add(nuevo_repositorio)
                 session.flush()  # Obtener el ID del nuevo repositorio
@@ -542,7 +509,7 @@ def detalles_post(owner, repo):
         return redirect(url_for('login_get'))
 
     url = f"https://api.github.com/repos/{owner}/{repo}"
-    response = requests.get(url)
+    response = requests.get(url, timeout=5)
 
     with Session(engine) as session:
         repositorio = session.query(Repositorios).filter_by(
