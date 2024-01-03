@@ -11,7 +11,6 @@ Autores:
 from datetime import datetime
 import requests
 from werkzeug.security import generate_password_hash, check_password_hash
-#from flask_session import Session Creo que este no vale para nada
 from flask import Flask, flash, redirect, render_template, url_for
 from flask import request, session as flask_session
 from sqlalchemy.orm import mapped_column, relationship
@@ -388,7 +387,6 @@ def add_post():
                 repo = repo_name
                 ).first()
             if repositorio:
-                # Actualizar los datos existentes
                 # Actualizar los datos existentes
                 for key, value in repo_info.items():
                     setattr(repositorio, key, value)
