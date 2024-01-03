@@ -13,6 +13,7 @@ import requests
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import Flask, flash, redirect, render_template, url_for
 from flask import request, session as flask_session
+from flask_session import Session
 from sqlalchemy.orm import mapped_column, relationship
 from sqlalchemy.orm import Session, DeclarativeBase, Mapped
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
@@ -123,8 +124,57 @@ def register_get():
     """
     return render_template('register.html')
 
+def validate_credentials (username, password):
+    """
+    Función que valida las credenciales de un usuario.
 
+    Parámetros:
+    - username (str): Nombre de usuario.
+    - password (str): Contraseña.
 
+    Returns:
+        - True si las credenciales son válidas.
+        - False si las credenciales no son válidas.
+    """
+    return len(username) > 0 and len(password) >= 6
+
+def register_user(username, password):
+    """
+    Función que registra un nuevo usuario en la base de datos.
+
+    Parámetros:
+    - username (str): Nombre de usuario.
+    - password (str): Contraseña.
+
+    Returns:
+        - El usuario recién creado.
+    """
+    hashed_password = generate_password_hash(password)
+
+    with Session(engine) as session:
+        try:
+            user = User(
+                username=username,
+                password=hashed_password
+            )
+
+            session.add(user)
+            session.commit()
+            return user.id
+        except IntegrityError:
+            session.rollback()
+            raise ValueError('Error: El nombre de usuario ya está en uso. Por favor, elige otro.')
+
+def set_session_cookie(user_id):
+    """
+    Función que establece la cookie de sesión con el ID del usuario.
+
+    Parámetros:
+    - user_id (int): ID del usuario.
+    """
+    flask_session['user_id'] = user_id
+    
+    
 @app.post("/register")
 def register_post():
     """
@@ -144,30 +194,18 @@ def register_post():
     username = request.form['username']
     password = request.form['password']
 
-    # Validaciones adicionales, si es necesario (p. ej., longitud de contraseña)
-    if len(username) == 0 or len(password) < 6:
+    if not validate_credentials(username, password):
         flash('Usuario o contraseña no válidos')
         return render_template('register.html')
 
-    hashed_password = generate_password_hash(password)
-
-    with Session(engine) as session:
-        try:
-            usuario = User(
-                username = username,
-                password = hashed_password
-            )
-
-            session.add(usuario)
-            session.commit()
-            # Establecer la cookie de sesión con el ID del usuario
-            flask_session['user_id'] = usuario.id
-            flash('Te has registrado satisfactoriamente')
-            return redirect(url_for('principal'))
-        except IntegrityError:
-            session.rollback()
-            flash('Error: El nombre de usuario ya está en uso. Por favor, elige otro.')
-
+    try:
+        usuario_id = register_user(username, password)
+        set_session_cookie(usuario_id)
+        flash('Te has registrado satisfactoriamente')
+        return redirect(url_for('principal'))
+    except ValueError as e:
+        flash(str(e))
+    
     return render_template('register.html')
 
 
@@ -182,7 +220,26 @@ def login_get():
     """
     return render_template('login.html')
 
+def login_user(username, password):
+    """
+    Función que inicia sesión con las credenciales de un usuario.
 
+    Parámetros:
+    - username (str): Nombre de usuario.
+    - password (str): Contraseña.
+
+    Returns:
+        - El usuario que ha iniciado sesión.
+    """
+    with Session(engine) as session:
+        usuario = session.scalar(
+            select(User).where(User.username == username)
+        )
+        if usuario and check_password_hash(usuario.password, password):
+            set_session_cookie(usuario.id)
+            return usuario
+        else:
+            raise ValueError('Nombre de usuario o contraseña incorrectos')
 
 @app.post('/login/')
 def login_post():
@@ -204,21 +261,15 @@ def login_post():
     username = request.form['username']
     password = request.form['password']
 
-    with Session(engine) as session:
-        usuario = session.scalar(
-            select(User).where(User.username == username)
-        )
-        if usuario and check_password_hash(usuario.password, password):
-            # Establecer la cookie de sesión con el ID del usuario
-            flask_session['user_id'] = usuario.id
-            flash('¡Te has logueado satisfactoriamente!', 'success')
-            return redirect(url_for('principal'))
-        error = 'Nombre de usuario o contraseña incorrectos'
-        flash('Inicio de sesión fallido. ' + error, 'error')
+    try:
+        user = login_user(username, password)
+        flash('¡Te has logueado satisfactoriamente!', 'success')
+        return redirect(url_for('principal'))
+    except ValueError as e:
+        flash('Inicio de sesión fallido. ' + str(e), 'error')
 
     return render_template(
         'login.html',
-        error = error,
         username = username
     )
 
