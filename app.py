@@ -8,12 +8,12 @@ Autores:
  - Alberto Santos Martínez
  - Mario Sanz Pérez
 """
+import os
 from datetime import datetime
 import requests
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import Flask, flash, redirect, render_template, url_for
 from flask import request, session as flask_session
-from flask_session import Session
 from sqlalchemy.orm import mapped_column, relationship
 from sqlalchemy.orm import Session, DeclarativeBase, Mapped
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
@@ -21,7 +21,6 @@ from sqlalchemy import Column, Integer, String, Boolean, Date, ForeignKey
 from sqlalchemy import select, create_engine, desc
 from sqlalchemy import func
 from dotenv import load_dotenv
-import os
 
 
 class Base(DeclarativeBase):
@@ -102,8 +101,6 @@ engine = create_engine(database_url, echo=True)
 Base.metadata.create_all(engine)
 
 github_token = os.getenv("GITHUB_TOKEN")
-if not github_token:
-    raise Exception("No se ha encontrado el token de GitHub en el archivo .env")
 headers = {"Authorization": f"Bearer {github_token}"}
 
 
@@ -171,9 +168,9 @@ def register_user(username, password):
             session.add(user)
             session.commit()
             return user.id
-        except IntegrityError:
+        except IntegrityError as exc:
             session.rollback()
-            raise ValueError('Error: El nombre de usuario ya está en uso. Por favor, elige otro.')
+            raise ValueError('Error: El nombre de usuario ya está en uso. Por favor, elige otro.') from exc
 
 def set_session_cookie(user_id):
     """
@@ -183,8 +180,8 @@ def set_session_cookie(user_id):
     - user_id (int): ID del usuario.
     """
     flask_session['user_id'] = user_id
-    
-    
+
+
 @app.post("/register")
 def register_post():
     """
@@ -215,7 +212,7 @@ def register_post():
         return redirect(url_for('principal'))
     except ValueError as e:
         flash(str(e))
-    
+
     return render_template('register.html')
 
 
@@ -248,8 +245,7 @@ def login_user(username, password):
         if usuario and check_password_hash(usuario.password, password):
             set_session_cookie(usuario.id)
             return usuario
-        else:
-            raise ValueError('Nombre de usuario o contraseña incorrectos')
+        raise ValueError('Nombre de usuario o contraseña incorrectos')
 
 @app.post('/login/')
 def login_post():
@@ -267,12 +263,11 @@ def login_post():
       y redirige a la página de inicio de sesión.
 
     """
-    error = None
     username = request.form['username']
     password = request.form['password']
 
     try:
-        user = login_user(username, password)
+        login_user(username, password)
         flash('¡Te has logueado satisfactoriamente!', 'success')
         return redirect(url_for('principal'))
     except ValueError as e:
