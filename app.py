@@ -20,6 +20,8 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy import Column, Integer, String, Boolean, Date, ForeignKey
 from sqlalchemy import select, create_engine, desc
 from sqlalchemy import func
+from dotenv import load_dotenv
+import os
 
 
 class Base(DeclarativeBase):
@@ -92,9 +94,17 @@ class UserRepo(Base):
 
 
 
-engine = create_engine("sqlite:///./BD/githubExplorer.sqlite", echo=True)
+load_dotenv('.')  # Carga las variables de entorno del archivo .env
+# Crea la base de datos en la carpeta BD
+database_name = os.getenv("DATABASE_NAME")
+database_url = f"sqlite:///./BD/{database_name}.sqlite"
+engine = create_engine(database_url, echo=True)
 Base.metadata.create_all(engine)
 
+github_token = os.getenv("GITHUB_TOKEN")
+if not github_token:
+    raise Exception("No se ha encontrado el token de GitHub en el archivo .env")
+headers = {"Authorization": f"Bearer {github_token}"}
 
 
 app = Flask(__name__)
@@ -407,9 +417,9 @@ def add_post():
 
     # Utiliza la API de GitHub para verificar si el repositorio existe
     url = f"https://api.github.com/repos/{owner}/{repo_name}"
-    response = requests.get(url, timeout=5)
+    response = requests.get(url, timeout=5, headers=headers)
     if response.status_code != 200:
-        flash("El repositorio no existe en GitHub o está mal escrito.")
+        flash("El repositorio no existe en GitHub o no tiene autorizacion.")
         return redirect(url_for('add_get'))
 
     repo_data = response.json()
@@ -558,7 +568,7 @@ def detalles_post(owner, repo):
         return redirect(url_for('login_get'))
 
     url = f"https://api.github.com/repos/{owner}/{repo}"
-    response = requests.get(url, timeout=5)
+    response = requests.get(url, timeout=5, headers=headers)
 
     with Session(engine) as session:
         repositorio = session.query(Repositorios).filter_by(
